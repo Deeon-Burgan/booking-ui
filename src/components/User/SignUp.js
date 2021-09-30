@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core';
 import { TextField, Button } from '@material-ui/core';
+import { useHistory } from "react-router-dom";
 const axios = require('axios');
 
 const useStyles = makeStyles((theme) => ({
@@ -13,6 +14,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function SignUp() {
+
+    axios.defaults.headers.common['Authorization'] =  `Bearer ${localStorage.getItem("jwt")}`
 
     const classes = useStyles();
     const [formDetails, setFormDetails] = useState({"email":'',
@@ -30,6 +33,7 @@ export default function SignUp() {
         })
     }
 
+    const history = useHistory();
     const submitData = (e) => {
         e.preventDefault();
         if(checkInput()){
@@ -38,6 +42,12 @@ export default function SignUp() {
             })
             .then((data) => {
                 console.log(data);
+                //save jwt token to browser
+                let token = data.data.token;
+                if(token){
+                    localStorage.setItem("jwt", token);
+                }
+                history.push("/");
             })
             .catch((error) => {
                 console.log(error);

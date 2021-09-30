@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles, Typography } from '@material-ui/core';
 import { TextField, Button } from '@material-ui/core';
 import { Grid } from '@material-ui/core';
+import { useHistory } from 'react-router-dom'
 const axios = require('axios');
 
 const useStyles = makeStyles((theme) => ({
@@ -18,6 +19,11 @@ export default function Login() {
     const styles = useStyles();
     const [loginDetails, setLoginDetails] = useState({ "email": '', "password": '' });
     const [attemptErrors, setAttemptErrors] = useState({});
+    const history = useHistory();
+
+    if(localStorage.getItem("jwt")){
+        history.push("/portal");
+    }
 
     const submitData = (event) => {
         event.preventDefault();
@@ -31,6 +37,11 @@ export default function Login() {
                 .then((data) => {
                     //Succeeded login
                     //save jwt token to local storage
+                    let token = data.data.token;
+                    if (token) {
+                        localStorage.setItem("jwt", token);
+                    }
+                    history.push("/");
                     //redirect to user portal
                 })
                 .catch((error) => {
